@@ -1,6 +1,6 @@
 Source: n2n
 Section: net
-Priority: extra
+Priority: optional
 Maintainer: cristian paul peñaranda rojas <kristian.paul@gmail.com>
 Uploaders: Rolf Leggewie <foss@rolf.leggewie.biz>
 Build-Depends: debhelper (>= 9)
