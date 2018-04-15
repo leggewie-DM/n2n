@@ -11,7 +11,7 @@ Vcs-Git: git@github.com:leggewie-DM/n2n.git
 Package: n2n
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
- lsb-base (>= 3.0-6)
+ lsb-base (>= 3.0-6), net-tools
 Description: Peer-to-Peer VPN network daemon
  n2n is an open source VPN application which utilizes 
  a Peer-to-peer architecture for network membership 
