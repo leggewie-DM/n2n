@@ -19,6 +19,21 @@ remote address to test your network
 
 For more info check http://www.ntop.org/n2n
 
+SECURITY
+--------
+
+n2n was abandoned upstream many years ago.  It is also a leaf package in use by
+only a limited number of users.  Therefore, users should take into account the
+possibility of security vulnerabilities in the VPNs it creates.  n2n is probably
+not the best solution for you if you need a very high level of security for your
+communications going over the VPN.  Consider one of the alternatives like
+freelan, another p2p VPN solution available in Debian and its derivatives.
+
+That being said, n2n is still in use on an almost daily basis by the Debian
+maintainer who is not aware of any exploits.  He likes n2n for its availability
+on a number of platforms including routers (OpenWRT, Freetz), low footprint,
+simple configuration and independence from a trusted central relay.
+
 TROUBLESHOOTING
 ---------------
 
