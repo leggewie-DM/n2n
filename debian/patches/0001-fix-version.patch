@@ -1,0 +1,46 @@
+From: Tianyu Chen <billchenchen2001@gmail.com>
+Date: Tue, 15 Nov 2022 08:00:11 +0800
+Subject: fix-version
+
+---
+ scripts/version.sh | 27 +++------------------------
+ 1 file changed, 3 insertions(+), 24 deletions(-)
+
+diff --git a/scripts/version.sh b/scripts/version.sh
+index e551500..07f76f0 100755
+--- a/scripts/version.sh
++++ b/scripts/version.sh
+@@ -16,30 +16,9 @@ TOPDIR=$(dirname "$0")/..
+ 
+ VER_FILE_SHORT=$(cat "${TOPDIR}/VERSION")
+ 
+-if [ -d "$TOPDIR/.git" ]; then
+-    # If there is a .git directory in our TOPDIR, then this is assumed to be
+-    # real git checkout
+-
+-    cd "$TOPDIR" || exit 1
+-
+-    VER_GIT_SHORT=$(git describe --abbrev=0)
+-
+-    if [ "$VER_FILE_SHORT" != "$VER_GIT_SHORT" ]; then
+-        echo "Error: VERSION file does not match tag version ($VER_FILE_SHORT != $VER_GIT_SHORT)"
+-        exit 1
+-    fi
+-
+-    VER_SHORT="$VER_GIT_SHORT"
+-    VER_HASH=$(git rev-parse --short HEAD)
+-    VER=$(git describe --abbrev=7 --dirty)
+-else
+-    # If there is no .git directory in our TOPDIR, we fall back on relying on
+-    # the VERSION file
+-
+-    VER_SHORT="$VER_FILE_SHORT"
+-    VER_HASH="HEAD"
+-    VER="$VER_FILE_SHORT"
+-fi
++VER_SHORT="$VER_FILE_SHORT"
++VER_HASH="HEAD"
++VER="$VER_FILE_SHORT"
+ 
+ case "$1" in
+     hash)

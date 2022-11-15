@@ -1,0 +1,601 @@
+Move n2n.7, supernode.1 to n2n.8 and supernode.8
+--- a/edge.8
++++ b/edge.8
+@@ -283,7 +283,7 @@
+ Don Bindner
+ (--) - significant contributions to n2n-1
+ .SH SEE ALSO
+-ifconfig(8) supernode(1) tunctl(8) n2n(7)
++ifconfig(8) supernode(8) tunctl(8) n2n(8)
+ .br
+ the documentation contained in the source code
+ .br
+--- a/n2n.7
++++ /dev/null
+@@ -1,132 +0,0 @@
+-.TH "n2n_v3" 7 "Sep 27, 2021" "version 3" "Background"
+-.SH NAME
+-n2n version 3 \- version 3 of the n2n decentralised peer-to-peer network overlay
+-VPN.
+-.SH DESCRIPTION
+-n2n is a peer-to-peer network overlay or VPN system that provides layer 2 over
+-layer 3 encapsulation with data transform capabilities such as encryption and
+-compression. This guide also discusses the differences of version 3 of n2n from
+-version 2.
+-.SH PROTOCOLS
+-n2n-3 basically uses the same set of messages to communicate with edges and
+-supernodes. However, due to slight packet format changes, the n2n-3 messages
+-are not compatible with n2n-2. There is no backward compatibility for n2n-2.
+-.SH ENCRYPTION
+-n2n-3 offers four different ciphers for payload encryption as well as optional
+-header encryption. Earlier versions of n2n-2 provided a mechanism using a key
+-schedule which has been removed in n2n-3. A basic user authentication scheme
+-relying on asymmetric cryptography has been added to n2n-3.
+-
+-n2n-3 provides the following ciphers to chose from for payload encryption; more
+-can be added as required:
+-.TP
+-.B (1) NULL
+-Data is encapsulated unchanged. Useful for testing and high-performance, low
+-sensitivity applications.
+-.TP
+-.B (2) TF-CTS
+-Twofish AES candidate in CTS mode.
+-.TP
+-.B (3) AES-CTS
+-AES in CTS mode with up to 256-bit key.
+-.TP
+-.B (4) CHACHA20
+-ChaCha20, a well known stream cipher developped by Daniel J. Bernstein.
+-.TP
+-.B (5) SPECK-CTR
+-A fast block cipher developped by the NSA used as stream cipher in CTR mode.
+-.TP
+-Full Header Encyption
+-The optional full header encryption also encrypts packets' header which include
+-some administrative data. In addition, it adds replay protection.
+-.TP
+-User Password Authentication
+-n2n-3 implements an optional user-password authentication scheme. A key
+-generator assists in generating user's public keys to be stored at the
+-supernode side.
+-.SH COPMPRESSION
+-LZO for payload compression is an always available option at n2n-3. If compiled with
+-zstdlib support, ZSTD is at optional service as well.
+-.SH EXTENSIBILITY
+-n2n-3 decouples the data transform system from the core of the edge
+-operation. This allows for easier addition of new data transform
+-operations. n2n-3 reserves some standard transform identifiers (such as TwoFish
+-encryption) but allocates transform identifiers for user-defined
+-transforms. This allows anyone to add to n2n new private transforms without
+-breaking compatibility with the standard offering.
+-.SH FEDERATED SUPERNODES
+-n2n-3 incorporates the capability of multiple supernodes to be federated.
+-Federation acts transparently and balances the workload evenly among the
+-federated supernodes. Supernodes keep track of edges connected to different
+-supernodes and forward packets as required. This feature naturally supports
+-fail-over and this increases redundancy and resilience.
+-.P
+-Information on additional supernodes is propagated to all edges. In addition,
+-the n2n-3 edge implementation allows multiple supernodes to be specified on the
+-command line. Edges monitor the current supernode for responses to
+-REGISTER_SUPER as well as PING messages. After three responses from current
+-supernode are missed or when a better supernode in terms of significant lower workload
+-is found, the edge tries to connect to another supernode. It cycles through the list
+-f supernodes which over and over again is sorted according to reported workload.
+-
+-.SH MANAGEMENT CONSOLE
+-Edge and supernode in n2n-3 provide a UDP-based management console. Both listen
+-on the localhost address 127.0.0.1. Commands can be sent to the programs by
+-sending to the UDP socket. Responses are returned to the socket from which
+-commands were issued. This only works from the computer on which the programs
+-are running. Statistics can be retrieved and commands issued. The netcat utility
+-is all that is required; but more sophisticated tools could be built on the
+-interface.
+-
+-.SH SUPERNODE AUTHENTICATION
+-The supernode federation name serves as private key shared between the supernodes only.
+-The corresponding public key can be provided to the edges.
+-
+-.SH MESSAGE SUMMARY
+-The following message types work within n2n-3.
+-.TP
+-REGISTER_SUPER
+-Sent from an edge to its local supernode to register its MAC with the community.
+-Also, federated supernodes use this packet format to register to each other.
+-.TP
+-REGISTER_SUPER_ACK
+-Sent from a supernode to an edge to confirm registration. This also carries the
+-definition of the edge socket as seen at the supernode so NAT can be detected
+-and described. Furthermore, it carries information about additional federated
+-supernodes.
+-.TP
+-REGISTER_SUPER_NAK
+-Supernode refusing to register an edge.
+-.TP
+-PACKET
+-Encapsulated ethernet packets sent between edges. Supernodes forward or
+-broadcast these and edges send them direct in peer-to-peer mode.
+-.TP
+-REGISTER
+-A peer-to-peer mode registration request from one edge to another. Supernodes
+-forward these to facilitate NAT crossing introductions.
+-.TP
+-REGISTER_ACK
+-Complete peer-to-peer mode setup between two edges. These messages need to
+-travel direct between edges.
+-.TP
+-QUERY_PEER
+-Queries a supernode about another edge, especially its public socket in case of
+-no peer-to-peer communication can be established. Additionally, it serves as PING
+-to query supernodes about themselves.
+-.TP
+-PEER_INFO
+-Answers the QUERY_PEER; it also covers the special case of the PING query, internally
+-called PONG.
+-.SH AUTHORS
+-.TP
+-Richard Andrews andrews (at) ntop.org - main author of n2n-2
+-.TP
+-Luca Deri
+-deri (at) ntop.org - code inherited from n2n-1
+-.SH SEE ALSO
+-ifconfig(8) edge(8) supernode(1)
+-.br
+-the documentation contained in the source code
+-.br
+-the extensive documentation found in n2n's \fBdoc/\fR folder
+--- /dev/null
++++ b/n2n.8
+@@ -0,0 +1,132 @@
++.TH "n2n_v3" 8 "Sep 27, 2021" "version 3" "Background"
++.SH NAME
++n2n version 3 \- version 3 of the n2n decentralised peer-to-peer network overlay
++VPN.
++.SH DESCRIPTION
++n2n is a peer-to-peer network overlay or VPN system that provides layer 2 over
++layer 3 encapsulation with data transform capabilities such as encryption and
++compression. This guide also discusses the differences of version 3 of n2n from
++version 2.
++.SH PROTOCOLS
++n2n-3 basically uses the same set of messages to communicate with edges and
++supernodes. However, due to slight packet format changes, the n2n-3 messages
++are not compatible with n2n-2. There is no backward compatibility for n2n-2.
++.SH ENCRYPTION
++n2n-3 offers four different ciphers for payload encryption as well as optional
++header encryption. Earlier versions of n2n-2 provided a mechanism using a key
++schedule which has been removed in n2n-3. A basic user authentication scheme
++relying on asymmetric cryptography has been added to n2n-3.
++
++n2n-3 provides the following ciphers to chose from for payload encryption; more
++can be added as required:
++.TP
++.B (1) NULL
++Data is encapsulated unchanged. Useful for testing and high-performance, low
++sensitivity applications.
++.TP
++.B (2) TF-CTS
++Twofish AES candidate in CTS mode.
++.TP
++.B (3) AES-CTS
++AES in CTS mode with up to 256-bit key.
++.TP
++.B (4) CHACHA20
++ChaCha20, a well known stream cipher developped by Daniel J. Bernstein.
++.TP
++.B (5) SPECK-CTR
++A fast block cipher developped by the NSA used as stream cipher in CTR mode.
++.TP
++Full Header Encyption
++The optional full header encryption also encrypts packets' header which include
++some administrative data. In addition, it adds replay protection.
++.TP
++User Password Authentication
++n2n-3 implements an optional user-password authentication scheme. A key
++generator assists in generating user's public keys to be stored at the
++supernode side.
++.SH COPMPRESSION
++LZO for payload compression is an always available option at n2n-3. If compiled with
++zstdlib support, ZSTD is at optional service as well.
++.SH EXTENSIBILITY
++n2n-3 decouples the data transform system from the core of the edge
++operation. This allows for easier addition of new data transform
++operations. n2n-3 reserves some standard transform identifiers (such as TwoFish
++encryption) but allocates transform identifiers for user-defined
++transforms. This allows anyone to add to n2n new private transforms without
++breaking compatibility with the standard offering.
++.SH FEDERATED SUPERNODES
++n2n-3 incorporates the capability of multiple supernodes to be federated.
++Federation acts transparently and balances the workload evenly among the
++federated supernodes. Supernodes keep track of edges connected to different
++supernodes and forward packets as required. This feature naturally supports
++fail-over and this increases redundancy and resilience.
++.P
++Information on additional supernodes is propagated to all edges. In addition,
++the n2n-3 edge implementation allows multiple supernodes to be specified on the
++command line. Edges monitor the current supernode for responses to
++REGISTER_SUPER as well as PING messages. After three responses from current
++supernode are missed or when a better supernode in terms of significant lower workload
++is found, the edge tries to connect to another supernode. It cycles through the list
++f supernodes which over and over again is sorted according to reported workload.
++
++.SH MANAGEMENT CONSOLE
++Edge and supernode in n2n-3 provide a UDP-based management console. Both listen
++on the localhost address 127.0.0.1. Commands can be sent to the programs by
++sending to the UDP socket. Responses are returned to the socket from which
++commands were issued. This only works from the computer on which the programs
++are running. Statistics can be retrieved and commands issued. The netcat utility
++is all that is required; but more sophisticated tools could be built on the
++interface.
++
++.SH SUPERNODE AUTHENTICATION
++The supernode federation name serves as private key shared between the supernodes only.
++The corresponding public key can be provided to the edges.
++
++.SH MESSAGE SUMMARY
++The following message types work within n2n-3.
++.TP
++REGISTER_SUPER
++Sent from an edge to its local supernode to register its MAC with the community.
++Also, federated supernodes use this packet format to register to each other.
++.TP
++REGISTER_SUPER_ACK
++Sent from a supernode to an edge to confirm registration. This also carries the
++definition of the edge socket as seen at the supernode so NAT can be detected
++and described. Furthermore, it carries information about additional federated
++supernodes.
++.TP
++REGISTER_SUPER_NAK
++Supernode refusing to register an edge.
++.TP
++PACKET
++Encapsulated ethernet packets sent between edges. Supernodes forward or
++broadcast these and edges send them direct in peer-to-peer mode.
++.TP
++REGISTER
++A peer-to-peer mode registration request from one edge to another. Supernodes
++forward these to facilitate NAT crossing introductions.
++.TP
++REGISTER_ACK
++Complete peer-to-peer mode setup between two edges. These messages need to
++travel direct between edges.
++.TP
++QUERY_PEER
++Queries a supernode about another edge, especially its public socket in case of
++no peer-to-peer communication can be established. Additionally, it serves as PING
++to query supernodes about themselves.
++.TP
++PEER_INFO
++Answers the QUERY_PEER; it also covers the special case of the PING query, internally
++called PONG.
++.SH AUTHORS
++.TP
++Richard Andrews andrews (at) ntop.org - main author of n2n-2
++.TP
++Luca Deri
++deri (at) ntop.org - code inherited from n2n-1
++.SH SEE ALSO
++ifconfig(8) edge(8) supernode(8)
++.br
++the documentation contained in the source code
++.br
++the extensive documentation found in n2n's \fBdoc/\fR folder
+--- a/supernode.1
++++ /dev/null
+@@ -1,133 +0,0 @@
+-.TH supernode 1  "Jul 16, 2021" "version 3" "USER COMMANDS"
+-.SH NAME
+-supernode \- n2n supernode daemon
+-.SH SYNOPSIS
+-.B supernode
+-<config file>
+-.br
+-.B supernode
+-[OPTION]...
+-.SH DESCRIPTION
+-N2N is a peer-to-peer VPN system. Supernode is a node introduction registry,
+-broadcast conduit and packet relay node for the n2n system. On startup supernode
+-begins listening on the specified UDP port for node registrations, and other
+-packets to route. The supernode can service any number of communities and routes
+-packets only between members of the same community. The supernode does not hold
+-the community encryption key and so cannot snoop or inject packets into the
+-community.
+-.PP
+-Supernode can service a number of n2n communities concurrently. Traffic does not
+-cross between communities.
+-.PP
+-All logging goes to stdout.
+-.PP
+-The config file is similar to the command line, with one option per line.
+-Lines starting with a "#" are ignored.
+-An equal sign ('=') should be used between key and value. Example: -p=7777
+-.SH OPTIONS FOR THE UNDERLYING NETWORK CONNECTION
+-.TP
+-\fB\-p \fR<\fIlocal_port\fR>, \fB\-\-local-port\fR=<\fIlocal_port\fR>
+-listen on this fixed local UDP port, defaults to 7654
+-.TP
+-\fB\-F \fR<\fIfed_name\fR>
+-name of the supernode's federation, defaults to '*Federation' (see also N2N_FEDERATION in ENVIRONMENT)
+-.TP
+-\fB\-l \fR<\fIhost:port\fR>
+-ip address or name, and port of known supernode
+-.TP
+-\fB\-m \fR<\fImac_address\fR>
+-fixed MAC address for the supernode, e.g.
+- '-m 10:20:30:40:50:60', random otherwise
+-.TP
+-\fB\-M\fR
+-disable MAC and IP address spoofing protection for all
+-non-username-password-authenticating communities
+-.TP
+-\fB\-V \fR<\fIversion_string\fR>
+-modify the supernode version string which is distributed to the
+-edges and shown at their management port output, up to 19 characters
+-.TP
+-.SH TAP DEVICE AND OVERLAY NETWORK CONFIGURATION
+-.TP
+-\fB\-c \fR<\fIpath\fR>, \fB\-\-communities\fR=<\fIpath\fR>
+-file containing the allowed communities and any User / Password based authentication
+-details (See ALLOWED COMMUNITIES FILE section)
+-.TP
+-\fB\-a \fR<\fInet-net/n\fR>, \fB\-\-autoip\fR=<net-net/n\fR>
+-subnet range for auto ip address service,
+-.br
+-e.g.  '-a 192.168.0.0-192.168.255.0/24',
+-.br
+-defaults to '10.128.255.0-10.255.255.0/24'
+-.SH LOCAL OPTIONS
+-.TP
+-\fB\-f\fR, \fB\-\-foreground\fR
+-disable daemon mode (UNIX) and run in foreground.
+-.TP
+-\fB\-t \fR<\fIport\fR>, \fB\-\-mgmt-port\fR=<\fIport\fR>
+-management UDP port, for multiple supernodes on a machine, defaults to 5645
+-.TP
+-\fB\-\-management-password \fR<\fIpassword\fR>
+-sets the password for access to JSON API at the management port, defaults to 'n2n'. The password
+-has to be provided for relevant access to JSON API at the management port.
+-.TP
+-\fB\-v\fR, \fB\-\-verbose\fR
+-use verbose logging
+-.TP
+-\fB\-u \fR<\fIUID\fR>
+-numeric user ID to use when privileges are dropped
+-.TP
+-\fB\-g \fR<\fIGID\fR>
+-numeric group ID to use when privileges are dropped
+-.TP
+-\fB-h\fR
+-shows a quick reference including all available options
+-.TP
+-\fB\-\-help\fR
+-shows detailed parameter description
+-
+-.SH ALLOWED COMMUNITIES FILE
+-This file is a plain text file.
+-Comments are introduced with a hash at the beginning of the line.
+-A line that begins with an asterisk is a user authentication definition and adds an allowed user to the most recently defined community.
+-Allowed communities can be specified with a regular expression.
+-.PP
+-Example community file:
+-.PP
+-.nf
+-.RS
+-# List of allowed communities
+-mynetwork
+-netleo
+-* logan nHWum+r42k1qDXdIeH-WFKeylK5UyLStRzxofRNAgpG
+-* sister HwHpPrdMft+38tFDDiunUds6927t0+zhCMMkQdJafcC
+-.RE
+-.fi
+-.PP
+-More details on creating the allowed communities file are found in the Communities.md and Authentication.md documentation included with this package.
+-.SH ENVIRONMENT
+-.TP
+-.B N2N_FEDERATION
+-set the federation name so it is not visible at the command line
+-.SH EXAMPLES
+-.TP
+-.B supernode -p 7654 -v
+-Start supernode listening on UDP port 7654 with verbose output.
+-.TP
+-.B echo | nc -w1 -u 127.0.0.1 5645
+-Shows the management status of a running supernode.
+-.PP
+-.SH RESTART
+-When supernode restarts it loses all registration information from associated
+-edge nodes. It can take up to five minutes for the edge nodes to re-register and
+-normal traffic flow to resume.
+-.SH EXIT STATUS
+-supernode is a daemon and any exit is an error
+-.SH AUTHOR
+-Luca Deri ( deri (at) ntop.org ), Richard Andrews ( andrews (at) ntop.org ), Don Bindner
+-.SH SEE ALSO
+-ifconfig(8) edge(8)
+-.br
+-the documentation contained in the source code
+-.br
+-the extensive documentation found in n2n's \fBdoc/\fR folder
+--- /dev/null
++++ b/supernode.8
+@@ -0,0 +1,133 @@
++.TH supernode 8  "Jul 16, 2021" "version 3" "USER COMMANDS"
++.SH NAME
++supernode \- n2n supernode daemon
++.SH SYNOPSIS
++.B supernode
++<config file>
++.br
++.B supernode
++[OPTION]...
++.SH DESCRIPTION
++N2N is a peer-to-peer VPN system. Supernode is a node introduction registry,
++broadcast conduit and packet relay node for the n2n system. On startup supernode
++begins listening on the specified UDP port for node registrations, and other
++packets to route. The supernode can service any number of communities and routes
++packets only between members of the same community. The supernode does not hold
++the community encryption key and so cannot snoop or inject packets into the
++community.
++.PP
++Supernode can service a number of n2n communities concurrently. Traffic does not
++cross between communities.
++.PP
++All logging goes to stdout.
++.PP
++The config file is similar to the command line, with one option per line.
++Lines starting with a "#" are ignored.
++An equal sign ('=') should be used between key and value. Example: -p=7777
++.SH OPTIONS FOR THE UNDERLYING NETWORK CONNECTION
++.TP
++\fB\-p \fR<\fIlocal_port\fR>, \fB\-\-local-port\fR=<\fIlocal_port\fR>
++listen on this fixed local UDP port, defaults to 7654
++.TP
++\fB\-F \fR<\fIfed_name\fR>
++name of the supernode's federation, defaults to '*Federation' (see also N2N_FEDERATION in ENVIRONMENT)
++.TP
++\fB\-l \fR<\fIhost:port\fR>
++ip address or name, and port of known supernode
++.TP
++\fB\-m \fR<\fImac_address\fR>
++fixed MAC address for the supernode, e.g.
++ '-m 10:20:30:40:50:60', random otherwise
++.TP
++\fB\-M\fR
++disable MAC and IP address spoofing protection for all
++non-username-password-authenticating communities
++.TP
++\fB\-V \fR<\fIversion_string\fR>
++modify the supernode version string which is distributed to the
++edges and shown at their management port output, up to 19 characters
++.TP
++.SH TAP DEVICE AND OVERLAY NETWORK CONFIGURATION
++.TP
++\fB\-c \fR<\fIpath\fR>, \fB\-\-communities\fR=<\fIpath\fR>
++file containing the allowed communities and any User / Password based authentication
++details (See ALLOWED COMMUNITIES FILE section)
++.TP
++\fB\-a \fR<\fInet-net/n\fR>, \fB\-\-autoip\fR=<net-net/n\fR>
++subnet range for auto ip address service,
++.br
++e.g.  '-a 192.168.0.0-192.168.255.0/24',
++.br
++defaults to '10.128.255.0-10.255.255.0/24'
++.SH LOCAL OPTIONS
++.TP
++\fB\-f\fR, \fB\-\-foreground\fR
++disable daemon mode (UNIX) and run in foreground.
++.TP
++\fB\-t \fR<\fIport\fR>, \fB\-\-mgmt-port\fR=<\fIport\fR>
++management UDP port, for multiple supernodes on a machine, defaults to 5645
++.TP
++\fB\-\-management-password \fR<\fIpassword\fR>
++sets the password for access to JSON API at the management port, defaults to 'n2n'. The password
++has to be provided for relevant access to JSON API at the management port.
++.TP
++\fB\-v\fR, \fB\-\-verbose\fR
++use verbose logging
++.TP
++\fB\-u \fR<\fIUID\fR>
++numeric user ID to use when privileges are dropped
++.TP
++\fB\-g \fR<\fIGID\fR>
++numeric group ID to use when privileges are dropped
++.TP
++\fB-h\fR
++shows a quick reference including all available options
++.TP
++\fB\-\-help\fR
++shows detailed parameter description
++
++.SH ALLOWED COMMUNITIES FILE
++This file is a plain text file.
++Comments are introduced with a hash at the beginning of the line.
++A line that begins with an asterisk is a user authentication definition and adds an allowed user to the most recently defined community.
++Allowed communities can be specified with a regular expression.
++.PP
++Example community file:
++.PP
++.nf
++.RS
++# List of allowed communities
++mynetwork
++netleo
++* logan nHWum+r42k1qDXdIeH-WFKeylK5UyLStRzxofRNAgpG
++* sister HwHpPrdMft+38tFDDiunUds6927t0+zhCMMkQdJafcC
++.RE
++.fi
++.PP
++More details on creating the allowed communities file are found in the Communities.md and Authentication.md documentation included with this package.
++.SH ENVIRONMENT
++.TP
++.B N2N_FEDERATION
++set the federation name so it is not visible at the command line
++.SH EXAMPLES
++.TP
++.B supernode -p 7654 -v
++Start supernode listening on UDP port 7654 with verbose output.
++.TP
++.B echo | nc -w1 -u 127.0.0.1 5645
++Shows the management status of a running supernode.
++.PP
++.SH RESTART
++When supernode restarts it loses all registration information from associated
++edge nodes. It can take up to five minutes for the edge nodes to re-register and
++normal traffic flow to resume.
++.SH EXIT STATUS
++supernode is a daemon and any exit is an error
++.SH AUTHOR
++Luca Deri ( deri (at) ntop.org ), Richard Andrews ( andrews (at) ntop.org ), Don Bindner
++.SH SEE ALSO
++ifconfig(8) edge(8)
++.br
++the documentation contained in the source code
++.br
++the extensive documentation found in n2n's \fBdoc/\fR folder
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -73,8 +73,6 @@
+ endif
+ 
+ MANDIR?=$(PREFIX)/share/man
+-MAN1DIR=$(MANDIR)/man1
+-MAN7DIR=$(MANDIR)/man7
+ MAN8DIR=$(MANDIR)/man8
+ 
+ N2N_LIB=libn2n.a
+@@ -140,7 +138,7 @@
+ APPS+=example_edge_embed
+ APPS+=example_sn_embed
+ 
+-DOCS=edge.8.gz supernode.1.gz n2n.7.gz
++DOCS=edge.8.gz supernode.8.gz n2n.8.gz
+ 
+ # This is the superset of all packages that might be needed during the build.
+ # Mostly of use in automated build systems.
+@@ -265,21 +263,21 @@
+ 	rm -f tests/*.out src/*.gcno src/*.gcda src/*.indent src/*.unc-backup*
+ 	rm -rf autom4te.cache/
+ 	rm -f config.log config.status configure Makefile tools/Makefile include/config.h include/config.h.in
+-	rm -f doc/edge.8.gz doc/n2n.7.gz doc/supernode.1.gz
++	rm -f doc/edge.8.gz doc/n2n.8.gz doc/supernode.8.gz
+ 	rm -f packages/debian/config.log packages/debian/config.status
+ 	rm -rf packages/debian/autom4te.cache/
+ 	rm -f packages/rpm/config.log packages/rpm/config.status
+ 	rm -f $(addprefix src/,$(APPS))
+ 
+ .PHONY: install
+-install: edge supernode edge.8.gz supernode.1.gz n2n.7.gz
++install: edge supernode edge.8.gz supernode.8.gz n2n.8.gz
+ 	echo "MANDIR=$(MANDIR)"
+-	$(MKDIR) $(SBINDIR) $(MAN1DIR) $(MAN7DIR) $(MAN8DIR)
++	$(MKDIR) $(SBINDIR) $(MAN8DIR)
+ 	$(INSTALL_PROG) supernode $(SBINDIR)/
+ 	$(INSTALL_PROG) edge $(SBINDIR)/
+ 	$(INSTALL_DOC) edge.8.gz $(MAN8DIR)/
+-	$(INSTALL_DOC) supernode.1.gz $(MAN1DIR)/
+-	$(INSTALL_DOC) n2n.7.gz $(MAN7DIR)/
++	$(INSTALL_DOC) supernode.8.gz $(MAN8DIR)/
++	$(INSTALL_DOC) n2n.8.gz $(MAN8DIR)/
+ 	$(MAKE) -C tools install SBINDIR=$(abspath $(SBINDIR))
+ 
+ # Docker builder section
