@@ -1,7 +1,7 @@
 n2n (3.1.1-0.1) UNRELEASED; urgency=medium
 
   * Non-maintainer upload.
-  * New upstream version 3.1.1. (Closes: #914321)
+  * New upstream version 3.1.1. (Closes: #914321, #1024139)
 
  -- Tianyu Chen <billchenchina2001@gmail.com>  Tue, 15 Nov 2022 08:51:52 +0800
 
