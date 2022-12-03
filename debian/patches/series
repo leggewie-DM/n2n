@@ -1,4 +1,2 @@
-01-edge.8.diff
-upstream-svn4235.patch
-makefile.patch
-02-reproducible-build.diff
+0001-fix-version.patch
+move-man-pages.patch

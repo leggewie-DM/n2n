@@ -2,15 +2,16 @@ Source: n2n
 Section: net
 Priority: optional
 Maintainer: Rolf Leggewie <foss@rolf.leggewie.biz>
-Build-Depends: debhelper (>= 9)
-Standards-Version: 4.1.4
+Build-Depends: cmake, debhelper-compat (= 13)
+Standards-Version: 4.5.1
 Homepage: http://www.ntop.org/products/n2n/
 Vcs-Browser: https://github.com/leggewie-DM/n2n
 Vcs-Git: https://github.com/leggewie-DM/n2n.git
 
 Package: n2n
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
+Multi-Arch: foreign
+Depends: ${misc:Depends}, ${shlibs:Depends},
  lsb-base (>= 3.0-6), net-tools
 Description: Peer-to-Peer VPN network daemon
  n2n is an open source VPN application which utilizes 
